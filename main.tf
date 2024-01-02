@@ -18,7 +18,7 @@ resource "aws_lambda_function" "add_student" {
     filename = "add_student.zip"
     function_name = "add_student"
     handler      = "add_student.lambda_handler"
-    runtime      = "python3.8"
+    runtime      = "python3.12"
     memory_size = 128
     role = aws_iam_role.lambda.arn
     environment {
@@ -32,7 +32,7 @@ resource "aws_lambda_function" "list_students" {
     filename = "list_students.zip"
     function_name = "list_students"
     handler      = "list_students.lambda_handler"
-    runtime      = "python3.8"
+    runtime      = "python3.12"
     role = aws_iam_role.lambda.arn
     environment {
         variables = {
