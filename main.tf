@@ -1,7 +1,7 @@
 provider "aws" {
  region = "us-east-1"
 }
-
+ 
 resource "aws_dynamodb_table" "students" {
  name           = "students"
  billing_mode   = "PROVISIONED"
@@ -13,8 +13,8 @@ resource "aws_dynamodb_table" "students" {
    type = "S"
  }
 }
-
-resource "aws_lambda_function" "add_student" {
+ 
+/*resource "aws_lambda_function" "add_student" {
     filename = "add_student.zip"
     function_name = "add_student"
     handler      = "add_student.lambda_handler"
@@ -26,7 +26,31 @@ resource "aws_lambda_function" "add_student" {
             DYNAMODB_TABLE = aws_dynamodb_table.students.name
         }
     }
+}*/
+data "archive_file" "zip" {
+ type        = "zip"
+ source_file = "add_student.py"
+ output_path = "add_student.zip"
 }
+resource "aws_lambda_function" "add_student" {
+ function_name = "add_student"
+ filename         = "${data.archive_file.zip.output_path}"
+ source_code_hash = "${data.archive_file.zip.output_base64sha256}"
+ role    = "${aws_iam_role.iam_for_lambda.arn}"
+ handler = "add_student.lambda_handler"
+ runtime = "python3.9"
+ environment {
+   variables = {
+    DYNAMODB_TABLE = aws_dynamodb_table.students.name
+   }
+ }
+}
+output "lambda" {
+
+  value = "${aws_lambda_function.lambda.qualified_arn}"
+
+}
+
  
 resource "aws_lambda_function" "list_students" {
     filename = "list_students.zip"
@@ -40,7 +64,7 @@ resource "aws_lambda_function" "list_students" {
         }
     }
 }
-
+ 
 resource "aws_iam_role" "lambda" {
  name = "lambda_execution_role"
  assume_role_policy = <<EOF
@@ -144,10 +168,6 @@ resource "aws_lambda_permission" "list_students_permission" {
 }
  
 resource "aws_api_gateway_deployment" "students_api_deployment" {
- depends_on = [
-   aws_api_gateway_integration.add_student_integration,
-   aws_api_gateway_integration.list_students_integration
- ]
  rest_api_id = aws_api_gateway_rest_api.students_api.id
  stage_name  = "prod"
 }
