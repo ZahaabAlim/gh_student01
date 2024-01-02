@@ -1,7 +1,7 @@
 provider "aws" {
  region = "us-east-1"
 }
- 
+
 resource "aws_dynamodb_table" "students" {
  name           = "students"
  billing_mode   = "PROVISIONED"
