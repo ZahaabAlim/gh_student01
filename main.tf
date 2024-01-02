@@ -35,7 +35,7 @@ resource "aws_lambda_function" "add_student" {
   filename      = "add_student.zip" # This is a zip file that contains the lambda_function.py code
 }
 # Create a Lambda function that can  list students
-resource "aws_lambda_function" "add_student" {
+resource "aws_lambda_function" "list_students" {
   function_name = "list_students"
   handler       = "list_students.lambda_handler"
   runtime       = "python3.8"
