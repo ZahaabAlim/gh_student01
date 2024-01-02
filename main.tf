@@ -40,7 +40,7 @@ resource "aws_lambda_function" "list_students" {
         }
     }
 }
- 
+
 resource "aws_iam_role" "lambda" {
  name = "lambda_execution_role"
  assume_role_policy = <<EOF
