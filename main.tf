@@ -13,7 +13,7 @@ resource "aws_dynamodb_table" "students" {
    type = "S"
  }
 }
- 
+
 resource "aws_lambda_function" "add_student" {
     filename = "add_student.zip"
     function_name = "add_student"
