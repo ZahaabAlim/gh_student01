@@ -2,10 +2,22 @@ provider "aws" {
  region = "us-east-1"
 }
  
+terraform {
+  backend "s3" {
+    bucket = "terraform-state-fil"
+    key    = "terraform.tfstate"
+    region = "us-east-1"
+ 
+    dynamodb_table = "TfStateLock"
+  }
+}
+ 
+ 
+ 
 resource "aws_dynamodb_table" "students" {
  name           = "students"
  billing_mode   = "PROVISIONED"
- read_capacity  = 1
+ read_capacity = 1
  write_capacity = 1
  hash_key       = "studentId"
  attribute {
@@ -18,7 +30,7 @@ resource "aws_lambda_function" "add_student" {
     filename = "add_student.zip"
     function_name = "add_student"
     handler      = "add_student.lambda_handler"
-    runtime      = "python3.12"
+    runtime      = "python3.8"
     memory_size = 128
     role = aws_iam_role.lambda.arn
     environment {
@@ -32,7 +44,7 @@ resource "aws_lambda_function" "list_students" {
     filename = "list_students.zip"
     function_name = "list_students"
     handler      = "list_students.lambda_handler"
-    runtime      = "python3.12"
+    runtime      = "python3.8"
     role = aws_iam_role.lambda.arn
     environment {
         variables = {
@@ -137,7 +149,7 @@ resource "aws_lambda_permission" "add_student_permission" {
  action        = "lambda:InvokeFunction"
  function_name = aws_lambda_function.add_student.function_name
  principal     = "apigateway.amazonaws.com"
- source_arn    = aws_api_gateway_rest_api.students_api.execution_arn
+ //source_arn    = aws_api_gateway_rest_api.students_api.execution_arn
 }
  
 resource "aws_lambda_permission" "list_students_permission" {
@@ -145,12 +157,21 @@ resource "aws_lambda_permission" "list_students_permission" {
  action        = "lambda:InvokeFunction"
  function_name = aws_lambda_function.list_students.function_name
  principal     = "apigateway.amazonaws.com"
- source_arn    = aws_api_gateway_rest_api.students_api.execution_arn
+ //source_arn    = aws_api_gateway_rest_api.students_api.execution_arn
 }
  
 resource "aws_api_gateway_deployment" "students_api_deployment" {
+  depends_on = [
+   aws_api_gateway_integration.add_student_integration,
+   aws_api_gateway_integration.list_students_integration
+ ]
  rest_api_id = aws_api_gateway_rest_api.students_api.id
- stage_name  = "prod"
+}
+ 
+resource "aws_api_gateway_stage" "example" {
+  deployment_id = aws_api_gateway_deployment.students_api_deployment.id
+  rest_api_id   = aws_api_gateway_rest_api.students_api.id
+  stage_name    = "example"
 }
  
 output "api_gateway_url" {
