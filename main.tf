@@ -11,8 +11,7 @@ terraform {
     dynamodb_table = "TfStatelock"
   }
 }
- 
- 
+
  
 resource "aws_dynamodb_table" "students" {
  name           = "students"
