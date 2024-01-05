@@ -1,12 +1,12 @@
 provider "aws" {
- region = "us-east-1"
+ region = " ap-south-1"
 }
  
 terraform {
   backend "s3" {
     bucket = "terraform-state-fil"
     key    = "terraform.tfstate"
-    region = "us-east-1"
+    region = " ap-south-1"
  
     dynamodb_table = "TfStateLock"
   }
