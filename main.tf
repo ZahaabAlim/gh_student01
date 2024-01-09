@@ -102,13 +102,13 @@ resource "aws_api_gateway_rest_api" "students_api" {
 resource "aws_api_gateway_resource" "add_student_resource" {
  rest_api_id = aws_api_gateway_rest_api.students_api.id
  parent_id   = aws_api_gateway_rest_api.students_api.root_resource_id
- path_part   = "addStudent"
+ path_part   = "add_student"
 }
  
 resource "aws_api_gateway_resource" "list_students_resource" {
  rest_api_id = aws_api_gateway_rest_api.students_api.id
  parent_id   = aws_api_gateway_rest_api.students_api.root_resource_id
- path_part   = "listStudent"
+ path_part   = "list_students"
 }
  
 resource "aws_api_gateway_method" "add_student_method" {
