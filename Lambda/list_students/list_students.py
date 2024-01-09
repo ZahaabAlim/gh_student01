@@ -2,7 +2,7 @@ import json
 import boto3
  
 dynamodb = boto3.resource('dynamodb')
-table_name = "student_table"  # Replace with your DynamoDB table name
+table_name = "students"  # Replace with your DynamoDB table name
  
 table = dynamodb.Table(table_name)
 def lambda_handler(event, context):
